@@ -1,7 +1,7 @@
 version: 2.1
 
 jobs:
-  push:
+  deploy:
     docker:
       - image: cimg/go:1.18
         auth:
