@@ -9,21 +9,18 @@ jobs:
           password: $DOCKERHUB_ACCESS_TOKEN
     steps:
       - checkout
-      - setup_remote_docker:
-          version: 20.10.11
-          docker_layer_caching: true
       - run:
-          name: "Push"
+          name: "Deplooy"
           command: |
-            make push
+            make deploy
 
 workflows:
-  build-and-push:
+  build-and-deploy:
     jobs:
       - build:
           context:
             - DockerHub
-      - push:
+      - deploy:
           context:
             - DockerHub
           requires:

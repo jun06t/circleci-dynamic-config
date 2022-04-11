@@ -6,6 +6,9 @@ build:
 	docker build -t ${REGISTRY_DOMAIN}/circleci-dynamic-config:latest .
 
 .PHONY: push
-push:
+push: build
 	docker push ${REGISTRY_DOMAIN}/circleci-dynamic-config
 
+.PHONY: deploy
+deploy:
+	echo "Deploy"
