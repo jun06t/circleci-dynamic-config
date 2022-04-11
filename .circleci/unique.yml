@@ -10,9 +10,8 @@ jobs:
     steps:
       - checkout
       - run:
-          name: "Deplooy"
-          command: |
-            make deploy
+          name: Deploy
+          command: make deploy
 
 workflows:
   build-and-deploy:

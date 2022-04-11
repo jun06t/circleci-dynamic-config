@@ -13,6 +13,8 @@ jobs:
           version: 20.10.11
           docker_layer_caching: true
       - run:
-          name: "Push"
-          command: |
-            make push
+          name: Login
+          command: docker login -u $DOCKERHUB_USER -p $DOCKERHUB_ACCESS_TOKEN
+      - run:
+          name: Push
+          command: make push
