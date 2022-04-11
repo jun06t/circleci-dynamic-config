@@ -6,7 +6,7 @@ jobs:
       - image: cimg/go
         auth:
           username: $DOCKERHUB_USER
-          password: $DOCKERHUB_PASSWORD
+          password: $DOCKERHUB_ACCESS_TOKEN
     steps:
       - checkout
       - setup_remote_docker:
@@ -20,8 +20,12 @@ jobs:
 workflows:
   build-and-push:
     jobs:
-      - build
+      - build:
+          context:
+            - DockerHub
       - push:
+          context:
+            - DockerHub
           requires:
             - build
           filters:
