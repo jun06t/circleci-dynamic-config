@@ -1,0 +1,30 @@
+version: 2.1
+
+jobs:
+  push:
+    docker:
+      - image: cimg/go
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASSWORD
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.11
+          docker_layer_caching: true
+      - run:
+          name: "Push"
+          command: |
+            make push
+
+workflows:
+  build-and-push:
+    jobs:
+      - build
+      - push:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - /.*/
