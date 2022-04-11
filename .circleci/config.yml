@@ -1,0 +1,25 @@
+version: 2.1
+
+# Dynamic Configuration
+setup: true
+
+orbs:
+  continuation: circleci/continuation@0.2.0
+
+jobs:
+  yq:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - run:
+          name: "Generate yaml"
+          command: |
+            yq eval-all '. as $item ireduce ({}; . * $item )' .circleci/common.yml .circleci/unique.yml > .circleci/merged.yml
+      - continuation/continue:
+          configuration_path: .circleci/merged.yml
+
+workflows:
+  setup-workflow:
+    jobs:
+      - yq
