@@ -4,22 +4,16 @@ version: 2.1
 setup: true
 
 orbs:
-  continuation: circleci/continuation@0.2.0
-
-jobs:
-  yq:
-    docker:
-      - image: cimg/base:stable
-    steps:
-      - checkout
-      - run:
-          name: "Generate yaml"
-          command: |
-            yq eval-all '. as $item ireduce ({}; . * $item )' .circleci/build.yml .circleci/deploy.yml > .circleci/merged.yml
-      - continuation/continue:
-          configuration_path: .circleci/merged.yml
+  path-filtering: circleci/path-filtering@0.1.2
 
 workflows:
-  setup-workflow:
+  always-run:
     jobs:
-      - yq
+      - path-filtering/filter:
+          name: check-updated-files
+          mapping: |
+            go/services/service1/.* run-build-service1-job true
+            go/services/service2/.* run-build-service2-job true
+            go/pkg/.* run-build-pkg-job true
+          base-revision: main
+          config-path: .circleci/continue_config.yml
