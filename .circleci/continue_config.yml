@@ -1,0 +1,71 @@
+version: 2.1
+
+parameters:
+  run-build-service1-job:
+    type: boolean
+    default: false
+  run-build-service2-job:
+    type: boolean
+    default: false
+  run-build-pkg-job:
+    type: boolean
+    default: false
+
+executors:
+  default:
+    docker:
+      - image: cimg/go:1.18
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_ACCESS_TOKEN
+
+jobs:
+  noop:
+    executor: default
+    steps:
+      - run:
+          name: "No operation"
+          command: echo "No operation"
+
+  build:
+    executor: default
+    parameters:
+      target:
+        type: string
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.11
+          docker_layer_caching: true
+      - run:
+          name: Build
+          command: |
+            cd go/services/<< parameters.target >>
+            go build cmd/main.go
+
+workflows:
+  version: 2
+  noop:
+    when:
+      and:
+        - not: << pipeline.parameters.run-build-service1-job >>
+        - not: << pipeline.parameters.run-build-service2-job >>
+        - not: << pipeline.parameters.run-build-pkg-job >>
+    jobs:
+      - noop
+  service1:
+    when:
+      or:
+        - << pipeline.parameters.run-build-service1-job >>
+        - << pipeline.parameters.run-build-pkg-job >>
+    jobs:
+      - build:
+          target: service1
+  service2:
+    when:
+      or:
+        - << pipeline.parameters.run-build-service2-job >>
+        - << pipeline.parameters.run-build-pkg-job >>
+    jobs:
+      - build:
+          target: service2
