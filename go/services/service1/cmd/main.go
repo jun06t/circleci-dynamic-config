@@ -13,4 +13,5 @@ func main() {
 		log.Fatal(err)
 	}
 	fmt.Println(id)
+	fmt.Println("done")
 }
